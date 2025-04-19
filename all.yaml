@@ -1,47 +1,11 @@
 motions:
-- file: generated/combined_fight1_subject3_1075_1326.json
+- file: generated/walk1_subject1_0_1385.json
   weight: null
-- file: generated/combined_fight1_subject3_6743_6824.json
+- file: generated/walk1_subject1_2480_2591.json
   weight: null
-- file: generated/combined_fight1_subject5_5410_5497.json
+- file: generated/walk1_subject1_2657_3117.json
   weight: null
-- file: generated/combined_fight1_subject5_5910_6080.json
+- file: generated/walk1_subject1_3163_3578.json
   weight: null
-- file: generated/combined_fight1_subject5_6964_7161.json
-  weight: null
-- file: generated/combined_fightAndSports1_subject1_2740_2875.json
-  weight: null
-- file: generated/combined_fightAndSports1_subject1_2880_3142.json
-  weight: null
-- file: generated/combined_fightAndSports1_subject1_4118_4284.json
-  weight: null
-- file: generated/combined_fightAndSports1_subject1_4557_4724.json
-  weight: null
-- file: generated/combined_fightAndSports1_subject1_4808_5036.json
-  weight: null
-- file: generated/combined_fightAndSports1_subject1_5456_5832.json
-  weight: null
-- file: generated/combined_fightAndSports1_subject1_6256_6522.json
-  weight: null
-- file: generated/combined_fightAndSports1_subject1_6634_7354.json
-  weight: null
-- file: generated/combined_fightAndSports1_subject4_153_809.json
-  weight: null
-- file: generated/combined_fightAndSports1_subject4_1835_2162.json
-  weight: null
-- file: generated/combined_fightAndSports1_subject4_2476_2596.json
-  weight: null
-- file: generated/combined_fightAndSports1_subject4_3082_3192.json
-  weight: null
-- file: generated/combined_fightAndSports1_subject4_3586_3768.json
-  weight: null
-- file: generated/combined_fightAndSports1_subject4_4378_4553.json
-  weight: null
-- file: generated/combined_fightAndSports1_subject4_4765_4950.json
-  weight: null
-- file: generated/combined_fightAndSports1_subject4_5856_6032.json
-  weight: null
-- file: generated/combined_fightAndSports1_subject4_6697_6787.json
-  weight: null
-- file: generated/combined_fightAndSports1_subject4_7139_7354.json
+- file: generated/walk1_subject1_5344_5772.json
   weight: null

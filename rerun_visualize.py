@@ -133,21 +133,55 @@ if __name__ == "__main__":
         modified_data[:,13+7] = 0
         modified_data[:,14+7] = 0
         
-        # 调整base rotation
-        base_rot = modified_data[:,3:7]
+                # 调整base rotation，将腰部X旋转应用到base旋转上
+        base_rot = modified_data[:,3:7].copy()
+        
         for i in range(modified_data.shape[0]):
-            # 创建绕X轴旋转的四元数 [qx, qy, qz, qw]
-            angle = waist_x_rot[i] / 2.0
-            qx = np.sin(angle)
-            qy = 0.0
-            qz = 0.0
-            qw = np.cos(angle)
-            x_rot_quat = np.array([qx, qy, qz, qw])
+            # 获取当前帧的base rotation四元数
+            current_rot_quat = base_rot[i]  # [qx, qy, qz, qw]
             
-            # 应用四元数乘法: base_rot = x_rot_quat * base_rot
-            # 四元数乘法的实现
-            q1 = x_rot_quat
-            q2 = base_rot[i]
+            # 计算当前base朝向的heading向量（通过将x轴单位向量(1,0,0)用当前四元数旋转得到）
+            # 四元数旋转向量的公式: v' = q * v * q^-1
+            
+            # 将x轴单位向量表示为纯四元数 [x, 0, 0, 0]
+            x_vec = np.array([1.0, 0.0, 0.0])
+            
+            # 计算共轭四元数（inverse）
+            conj_quat = np.array([-current_rot_quat[0], -current_rot_quat[1], 
+                                  -current_rot_quat[2], current_rot_quat[3]])
+            
+            # 首先计算 q * v（将向量视为纯四元数）
+            # 四元数乘法 q * [x,0,0,0]
+            temp_w = -current_rot_quat[0]*x_vec[0] - current_rot_quat[1]*x_vec[1] - current_rot_quat[2]*x_vec[2]
+            temp_x = current_rot_quat[3]*x_vec[0] + current_rot_quat[1]*x_vec[2] - current_rot_quat[2]*x_vec[1]
+            temp_y = current_rot_quat[3]*x_vec[1] + current_rot_quat[2]*x_vec[0] - current_rot_quat[0]*x_vec[2]
+            temp_z = current_rot_quat[3]*x_vec[2] + current_rot_quat[0]*x_vec[1] - current_rot_quat[1]*x_vec[0]
+            
+            # 然后计算 (q*v) * q^-1
+            result_w = -temp_x*conj_quat[0] - temp_y*conj_quat[1] - temp_z*conj_quat[2] + temp_w*conj_quat[3]
+            result_x = temp_w*conj_quat[0] + temp_y*conj_quat[2] - temp_z*conj_quat[1] + temp_x*conj_quat[3]
+            result_y = temp_w*conj_quat[1] + temp_z*conj_quat[0] - temp_x*conj_quat[2] + temp_y*conj_quat[3]
+            result_z = temp_w*conj_quat[2] + temp_x*conj_quat[1] - temp_y*conj_quat[0] + temp_z*conj_quat[3]
+            
+            # 结果向量是 [result_x, result_y, result_z]，这是当前朝向
+            heading_vec = np.array([result_x, result_y, result_z])
+            heading_vec = heading_vec / np.linalg.norm(heading_vec)  # 归一化
+            
+            # 创建一个绕heading_vec旋转waist_x_rot角度的四元数
+            angle = waist_x_rot[i] / 2.0
+            sin_angle = np.sin(angle)
+            cos_angle = np.cos(angle)
+            
+            rot_qx = heading_vec[0] * sin_angle
+            rot_qy = heading_vec[1] * sin_angle
+            rot_qz = heading_vec[2] * sin_angle
+            rot_qw = cos_angle
+            
+            rot_quat = np.array([rot_qx, rot_qy, rot_qz, rot_qw])
+            
+            # 应用四元数乘法: base_rot = rot_quat * base_rot
+            q1 = rot_quat
+            q2 = current_rot_quat
             
             result_w = q1[3]*q2[3] - q1[0]*q2[0] - q1[1]*q2[1] - q1[2]*q2[2]
             result_x = q1[3]*q2[0] + q1[0]*q2[3] + q1[1]*q2[2] - q1[2]*q2[1]
@@ -158,7 +192,7 @@ if __name__ == "__main__":
             mag = np.sqrt(result_w**2 + result_x**2 + result_y**2 + result_z**2)
             if mag > 0:
                 base_rot[i] = np.array([result_x, result_y, result_z, result_w]) / mag
-
+        
         # 将结果存回modified_data
         modified_data[:,3:7] = base_rot
         modified_data[:,1+7] -= waist_x_rot
@@ -387,7 +421,7 @@ if __name__ == "__main__":
         start_str = str(start)
         end_str = str(end)
         # 创建目录（如果不存在）
-        output_dir = robot_type + '/' + 'good_clips'
+        output_dir = robot_type + '/' + 'walk_clips'
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
         # 保存
@@ -396,9 +430,9 @@ if __name__ == "__main__":
         print(f"数据已保存至: {output_file}")
     data = modified_data
     rerun_urdf = RerunURDF(robot_type)
-    ##for i in range (29):
-    ##    print(i,rerun_urdf.robot.model.names[i])
-    ##exit(0)
+    #for i in range (29):
+    #    print(i,rerun_urdf.robot.model.names[i])
+    #exit(0)
     for frame_nr in range(data.shape[0]):
         rr.set_time_sequence('frame_nr', frame_nr)
         configuration = data[frame_nr, :]

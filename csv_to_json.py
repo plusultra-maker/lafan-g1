@@ -328,8 +328,8 @@ if __name__ == "__main__":
     # current_dir = os.path.dirname(os.path.abspath(__file__))
     current_dir = r"E:\CS\Graphics\lafan-g1"
     
-    csv_directory = os.path.join(current_dir, "g1", "combined_clips")
-    json_directory = os.path.join(current_dir, "json", "good_combined_clips")
+    csv_directory = os.path.join(current_dir, "g1", "walk_clips")
+    json_directory = os.path.join(current_dir, "json", "walk_clips")
     if not os.path.exists(json_directory):
         os.makedirs(json_directory)
     csv_files = os.listdir(csv_directory)
